@@ -1,0 +1,92 @@
+<div class="form-container">
+  <h1><%= item ? 'Edit Content' : 'Add New Content' %></h1>
+  
+  <% if (error) { %>
+    <p class="error"><%= error %></p>
+  <% } %>
+  
+  <form method="post" action="<%= item ? '/admin/content/' + item.id + '/edit' : '/admin/content/new' %>">
+    <div class="form-group">
+      <label>Title *</label>
+      <input type="text" name="title" value="<%= item ? item.title : '' %>" required placeholder="Enter movie/series title" />
+    </div>
+
+    <div class="form-group">
+      <label>Description</label>
+      <textarea name="description" rows="5" placeholder="Enter a brief description of the content"><%= item ? (item.description || '') : '' %></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Category *</label>
+      <select name="category" required>
+        <option value="movie" <%= item && item.category === 'movie' ? 'selected' : '' %>>Movie</option>
+        <option value="series" <%= item && item.category === 'series' ? 'selected' : '' %>>Series</option>
+        <option value="anime" <%= item && item.category === 'anime' ? 'selected' : '' %>>Anime</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Genre</label>
+      <select name="genre_id">
+        <option value="">-- Select Genre --</option>
+        <% if (typeof genres !== 'undefined' && genres.length > 0) { %>
+          <% genres.forEach(function(genre) { %>
+            <option value="<%= genre.id %>" <%= item && item.genre_id == genre.id ? 'selected' : '' %>>
+              <%= genre.name %>
+            </option>
+          <% }); %>
+        <% } %>
+      </select>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+      <div class="form-group">
+        <label>Year</label>
+        <input type="number" name="year" value="<%= item ? (item.year || '') : '' %>" placeholder="2024" min="1900" max="2100" />
+      </div>
+
+      <div class="form-group">
+        <label>Country</label>
+        <input type="text" name="country" value="<%= item ? (item.country || '') : '' %>" placeholder="USA" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Rating (0.0 - 10.0)</label>
+      <input type="number" name="rating" value="<%= item ? (item.rating || 0) : 0 %>" step="0.1" min="0" max="10" placeholder="7.5" />
+    </div>
+
+    <div class="form-group">
+      <label>Poster Image URL *</label>
+      <input type="url" name="image_url" value="<%= item ? (item.image_url || '') : '' %>" placeholder="https://example.com/poster.jpg" />
+      <small style="color: var(--text-secondary); font-size: 0.85rem;">Recommended size: 300x450px</small>
+    </div>
+
+    <div class="form-group">
+      <label>Video URL * (YouTube, Vimeo, or direct video link)</label>
+      <input type="url" name="video_url" value="<%= item ? (item.video_url || '') : '' %>" required placeholder="https://www.youtube.com/watch?v=..." />
+      <small style="color: var(--text-secondary); font-size: 0.85rem;">Supports YouTube, Vimeo, and direct MP4 links</small>
+    </div>
+
+    <div class="form-group">
+      <div class="form-checkbox">
+        <input type="checkbox" name="is_featured" id="is_featured" value="1" <%= item && item.is_featured ? 'checked' : '' %> />
+        <label for="is_featured" style="margin: 0;">Featured (Show in recommended section)</label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="form-checkbox">
+        <input type="checkbox" name="is_banner" id="is_banner" value="1" <%= item && item.is_banner ? 'checked' : '' %> />
+        <label for="is_banner" style="margin: 0;">Banner (Show in homepage slider)</label>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn primary">
+        <%= item ? '✔ Save Changes' : '✚ Create Content' %>
+      </button>
+      <a href="/admin" class="btn secondary">← Back to Dashboard</a>
+    </div>
+  </form>
+</div>

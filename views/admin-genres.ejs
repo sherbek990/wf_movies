@@ -1,0 +1,66 @@
+<div class="admin-container">
+  <div class="admin-header">
+    <h1>Manage Genres</h1>
+    <a href="/admin" class="btn secondary">← Back to Dashboard</a>
+  </div>
+
+  <% if (typeof error !== 'undefined' && error) { %>
+    <p class="error"><%= error %></p>
+  <% } %>
+
+  <% if (typeof success !== 'undefined' && success) { %>
+    <p class="success"><%= success %></p>
+  <% } %>
+
+  <!-- Add Genre Form -->
+  <div style="background: var(--card-bg); padding: 2rem; border-radius: 10px; margin-bottom: 2rem;">
+    <h2 style="margin-bottom: 1rem;">Add New Genre</h2>
+    <form method="post" action="/admin/genres/add" style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 1rem; align-items: end;">
+      <div class="form-group" style="margin: 0;">
+        <label>Genre Name</label>
+        <input type="text" name="name" required placeholder="e.g., Action" />
+      </div>
+      <div class="form-group" style="margin: 0;">
+        <label>URL Slug</label>
+        <input type="text" name="slug" required placeholder="e.g., action" pattern="[a-z0-9-]+" title="Only lowercase letters, numbers, and hyphens" />
+      </div>
+      <button type="submit" class="btn primary">✚ Add Genre</button>
+    </form>
+  </div>
+
+  <!-- Genres List -->
+  <% if (genres && genres.length > 0) { %>
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Genre Name</th>
+          <th>URL Slug</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% genres.forEach(function(genre) { %>
+          <tr>
+            <td><%= genre.id %></td>
+            <td><strong><%= genre.name %></strong></td>
+            <td><code>/genre/<%= genre.slug %></code></td>
+            <td>
+              <div class="admin-actions">
+                <a class="btn small secondary" href="/genre/<%= genre.slug %>" target="_blank">👁 View</a>
+                <form method="post" action="/admin/genres/<%= genre.id %>/delete" style="display:inline-block" onsubmit="return confirm('Delete this genre? Movies using this genre will not be deleted.');">
+                  <button class="btn small danger" type="submit">🗑 Delete</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } else { %>
+    <div style="text-align: center; padding: 3rem; color: var(--text-secondary); background: var(--card-bg); border-radius: 10px;">
+      <h3>No genres available</h3>
+      <p style="margin-top: 1rem;">Add your first genre using the form above</p>
+    </div>
+  <% } %>
+</div>

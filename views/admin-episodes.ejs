@@ -1,0 +1,88 @@
+<div class="admin-container">
+  <div class="admin-header">
+    <div>
+      <h1>Episodes - <%= content.title %></h1>
+      <p style="color: var(--text-secondary); margin-top: 0.5rem;">
+        Manage episodes/parts for this <%= content.category %>
+      </p>
+    </div>
+    <div style="display: flex; gap: 1rem;">
+      <a class="btn primary" href="/admin/content/<%= content.id %>/episodes/new">➕ Add Episode</a>
+      <a class="btn secondary" href="/admin">← Back to Dashboard</a>
+    </div>
+  </div>
+
+  <% if (typeof req !== 'undefined' && req.query.error) { %>
+    <div class="error"><%= req.query.error %></div>
+  <% } %>
+
+  <% if (typeof req !== 'undefined' && req.query.success) { %>
+    <div class="success"><%= req.query.success %></div>
+  <% } %>
+
+  <% if (episodes && episodes.length > 0) { %>
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Episode #</th>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Video Source</th>
+          <th>Duration</th>
+          <th>Views</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% episodes.forEach(function(episode) { %>
+          <tr>
+            <td><strong>#<%= episode.episode_number %></strong></td>
+            <td><%= episode.title || 'Episode ' + episode.episode_number %></td>
+            <td style="max-width: 300px;">
+              <%= episode.description ? episode.description.slice(0, 80) + '...' : '-' %>
+            </td>
+            <td>
+              <% if (episode.video_url.startsWith('/uploads')) { %>
+                <span style="color: var(--secondary);">📁 Uploaded File</span>
+              <% } else if (episode.video_url.includes('youtube') || episode.video_url.includes('youtu.be')) { %>
+                <span style="color: #ff0000;">▶️ YouTube</span>
+              <% } else if (episode.video_url.includes('vimeo')) { %>
+                <span style="color: #1ab7ea;">▶️ Vimeo</span>
+              <% } else { %>
+                <span style="color: var(--primary);">🔗 External Link</span>
+              <% } %>
+            </td>
+            <td><%= episode.duration ? episode.duration + ' min' : '-' %></td>
+            <td><%= episode.views || 0 %></td>
+            <td>
+              <div class="admin-actions">
+                <a class="btn small secondary" href="/watch/<%= content.id %>?ep=<%= episode.episode_number %>" target="_blank">👁 View</a>
+                <a class="btn small primary" href="/admin/content/<%= content.id %>/episodes/<%= episode.id %>/edit">✏ Edit</a>
+                <form method="post" action="/admin/content/<%= content.id %>/episodes/<%= episode.id %>/delete" style="display:inline-block" onsubmit="return confirm('Delete this episode?');">
+                  <button class="btn small danger" type="submit">🗑 Delete</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } else { %>
+    <div style="text-align: center; padding: 3rem; color: var(--text-secondary); background: var(--card-bg); border-radius: 10px;">
+      <h3>No Episodes Yet</h3>
+      <p style="margin: 1rem 0;">Start by adding your first episode for this <%= content.category %></p>
+      <a class="btn primary" href="/admin/content/<%= content.id %>/episodes/new">➕ Add Episode</a>
+    </div>
+  <% } %>
+
+  <div style="margin-top: 2rem; padding: 1rem; background: var(--card-bg); border-radius: 8px; border-left: 3px solid var(--secondary);">
+    <h3 style="margin-top: 0; font-size: 1rem;">📝 Episode Management Tips:</h3>
+    <ul style="color: var(--text-secondary); font-size: 0.9rem; margin: 0.5rem 0;">
+      <li>You can add episodes using links (YouTube, Vimeo, etc.) or upload video files from your device</li>
+      <li>Episodes are numbered sequentially (1, 2, 3, etc.)</li>
+      <li>Each episode can have its own title and description</li>
+      <li>Maximum file size for uploads: 500MB per video</li>
+      <li>Supported formats: MP4, AVI, MKV, MOV, WMV, FLV, WebM</li>
+    </ul>
+  </div>
+</div>

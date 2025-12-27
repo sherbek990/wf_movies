@@ -1,0 +1,43 @@
+<div class="content-section" style="margin-top: 2rem;">
+  <div class="section-header">
+    <div class="section-title">
+      <span class="section-dot"></span>
+      <h2><%= title %></h2>
+    </div>
+  </div>
+
+  <% if (error) { %>
+    <p class="error"><%= error %></p>
+  <% } %>
+
+  <% if (content && content.length > 0) { %>
+    <div class="movie-grid">
+      <% content.forEach(function(item) { %>
+        <div class="movie-card">
+          <div class="card-poster">
+            <img src="<%= item.image_url || 'https://via.placeholder.com/300x450/1a1a1a/666?text=' + encodeURIComponent(item.title) %>" alt="<%= item.title %>" />
+            <% if (item.rating && item.rating > 0) { %>
+              <span class="card-badge">⭐ <%= item.rating %></span>
+            <% } %>
+          </div>
+          <div class="card-info">
+            <h3><%= item.title %></h3>
+            <div class="card-meta">
+              <span><%= item.year || 'N/A' %></span>
+              <span><%= item.genre_name || item.category %></span>
+            </div>
+            <% if (item.description) { %>
+              <p class="card-description"><%= item.description.slice(0, 80) %>...</p>
+            <% } %>
+            <a class="btn small primary" href="/watch/<%= item.id %>">▶ Watch</a>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  <% } else { %>
+    <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+      <h3>No content available</h3>
+      <a href="/" class="btn primary" style="margin-top: 2rem;">Back to Home</a>
+    </div>
+  <% } %>
+</div>

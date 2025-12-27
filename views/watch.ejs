@@ -1,0 +1,223 @@
+<div class="watch-container">
+  <h1 style="margin-bottom: 1rem;"><%= item.title %>
+    <% if (typeof currentEpisode !== 'undefined' && currentEpisode) { %>
+      <span style="color: var(--secondary); font-size: 1.2rem;"> - Episode <%= currentEpisode.episode_number %></span>
+    <% } %>
+  </h1>
+  
+  <div class="video-wrapper">
+    <div class="video-player">
+      <% 
+        // Determine which video URL to use (episode or main content)
+        const videoUrl = (typeof currentEpisode !== 'undefined' && currentEpisode) ? currentEpisode.video_url : item.video_url;
+      %>
+      <% if (videoUrl) { %>
+        <% if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) { %>
+          <% 
+            let videoId = videoUrl;
+            if (videoId.includes('youtu.be/')) {
+              videoId = videoId.split('youtu.be/')[1].split('?')[0];
+            } else if (videoId.includes('watch?v=')) {
+              videoId = videoId.split('watch?v=')[1].split('&')[0];
+            }
+          %>
+          <iframe 
+            src="https://www.youtube.com/embed/<%= videoId %>" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+          </iframe>
+        <% } else if (videoUrl.includes('vimeo.com')) { %>
+          <iframe 
+            src="<%= videoUrl.replace('vimeo.com/', 'player.vimeo.com/video/') %>" 
+            frameborder="0" 
+            allow="autoplay; fullscreen; picture-in-picture" 
+            allowfullscreen>
+          </iframe>
+        <% } else { %>
+          <video controls preload="metadata" playsinline>
+            <source src="<%= videoUrl %>" type="video/mp4">
+            <source src="<%= videoUrl %>" type="video/webm">
+            <source src="<%= videoUrl %>" type="video/ogg">
+            Your browser does not support the video tag.
+          </video>
+        <% } %>
+      <% } else { %>
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: var(--card-bg); color: var(--text-secondary);">
+          <div style="text-align: center;">
+            <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">⚠️ Video not available</p>
+            <p style="font-size: 0.9rem;">Please contact admin to add video source</p>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Episodes List (if available) -->
+  <% if (typeof episodes !== 'undefined' && episodes && episodes.length > 0) { %>
+    <div style="background: var(--card-bg); padding: 1.5rem; border-radius: 10px; margin: 2rem 0;">
+      <h2 style="font-size: 1.3rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+        <span style="color: var(--secondary);">📺</span> Episodes
+      </h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem;">
+        <% episodes.forEach(function(ep) { %>
+          <% const isActive = (typeof currentEpisode !== 'undefined' && currentEpisode && currentEpisode.id === ep.id); %>
+          <a 
+            href="/watch/<%= item.id %>?ep=<%= ep.episode_number %>" 
+            class="episode-card <%= isActive ? 'active' : '' %>"
+          >
+            <div class="episode-number">
+              #<%= ep.episode_number %>
+            </div>
+            <div class="episode-title <%= isActive ? 'active' : '' %>">
+              <%= ep.title || 'Episode ' + ep.episode_number %>
+            </div>
+            <% if (ep.duration) { %>
+              <div class="episode-duration <%= isActive ? 'active' : '' %>">
+                <%= ep.duration %> min
+              </div>
+            <% } %>
+          </a>
+        <% }); %>
+      </div>
+    </div>
+    
+    <style>
+      .episode-card {
+        padding: 1rem;
+        background: var(--hover-bg);
+        border-radius: 8px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        display: block;
+      }
+      
+      .episode-card.active {
+        background: var(--primary);
+        border-color: var(--primary);
+      }
+      
+      .episode-card:hover {
+        background: var(--primary);
+        transform: translateY(-2px);
+      }
+      
+      .episode-number {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 0.3rem;
+      }
+      
+      .episode-title {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      
+      .episode-title.active,
+      .episode-card:hover .episode-title {
+        color: #fff;
+      }
+      
+      .episode-duration {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        margin-top: 0.3rem;
+      }
+      
+      .episode-duration.active,
+      .episode-card:hover .episode-duration {
+        color: rgba(255, 255, 255, 0.8);
+      }
+    </style>
+  <% } %>
+
+  <div class="movie-details">
+    <div class="movie-poster">
+      <img src="<%= item.image_url || 'https://via.placeholder.com/300x450/1a1a1a/666?text=' + encodeURIComponent(item.title) %>" alt="<%= item.title %>" />
+    </div>
+    
+    <div class="movie-info">
+      <h1><%= item.title %></h1>
+      
+      <div class="movie-meta">
+        <% if (item.rating && item.rating > 0) { %>
+          <div class="meta-item">
+            <span class="rating">⭐ <%= item.rating %></span>
+          </div>
+        <% } %>
+        
+        <% if (item.year) { %>
+          <div class="meta-item">
+            <strong>Year:</strong> <%= item.year %>
+          </div>
+        <% } %>
+        
+        <% if (item.genre_name) { %>
+          <div class="meta-item">
+            <strong>Genre:</strong> <a href="/genre/<%= item.genre_name.toLowerCase().replace(' ', '-') %>"><%= item.genre_name %></a>
+          </div>
+        <% } %>
+        
+        <% if (item.country) { %>
+          <div class="meta-item">
+            <strong>Country:</strong> <%= item.country %>
+          </div>
+        <% } %>
+        
+        <div class="meta-item">
+          <strong>Category:</strong> <%= item.category %>
+        </div>
+        
+        <% if (item.views > 0) { %>
+          <div class="meta-item">
+            <strong>Views:</strong> <%= item.views %>
+          </div>
+        <% } %>
+      </div>
+
+      <% if (item.description) { %>
+        <div class="movie-description">
+          <h3>Description</h3>
+          <p><%= item.description %></p>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Similar Movies -->
+  <% if (typeof similar !== 'undefined' && similar.length > 0) { %>
+    <section class="similar-section">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-dot"></span>
+          <h2>Similar Movies</h2>
+        </div>
+      </div>
+      
+      <div class="movie-grid">
+        <% similar.forEach(function(movie) { %>
+          <div class="movie-card">
+            <div class="card-poster">
+              <img src="<%= movie.image_url || 'https://via.placeholder.com/300x450/1a1a1a/666?text=' + encodeURIComponent(movie.title) %>" alt="<%= movie.title %>" />
+              <% if (movie.rating && movie.rating > 0) { %>
+                <span class="card-badge">⭐ <%= movie.rating %></span>
+              <% } %>
+            </div>
+            <div class="card-info">
+              <h3><%= movie.title %></h3>
+              <div class="card-meta">
+                <span><%= movie.year || 'N/A' %></span>
+                <span><%= movie.genre_name || movie.category %></span>
+              </div>
+              <a class="btn small primary" href="/watch/<%= movie.id %>">▶ Watch</a>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    </section>
+  <% } %>
+</div>

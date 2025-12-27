@@ -1,0 +1,23 @@
+{
+  "name": "wf-movies",
+  "version": "1.0.0",
+  "description": "WF Movies - Modern Movie Streaming Website",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "build": "echo 'No build step required'"
+  },
+  "keywords": ["movies", "streaming", "cinema"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "body-parser": "^2.2.1",
+    "ejs": "^3.1.10",
+    "express": "^5.2.1",
+    "express-ejs-layouts": "^2.5.1",
+    "express-session": "^1.18.2",
+    "multer": "^1.4.5-lts.1",
+    "sqlite3": "^5.1.7"
+  }
+}

@@ -1,0 +1,132 @@
+<div class="form-container">
+  <h1><%= episode ? 'Edit Episode' : 'Add New Episode' %> - <%= content.title %></h1>
+  
+  <% if (error) { %>
+    <div class="error"><%= error %></div>
+  <% } %>
+  
+  <form method="post" action="<%= episode ? `/admin/content/${content.id}/episodes/${episode.id}/edit` : `/admin/content/${content.id}/episodes/new` %>" enctype="multipart/form-data">
+    
+    <div class="form-group">
+      <label>Episode Number *</label>
+      <input 
+        type="number" 
+        name="episode_number" 
+        value="<%= episode ? episode.episode_number : '' %>" 
+        required 
+        min="1"
+        placeholder="1" 
+      />
+      <small style="color: var(--text-secondary); font-size: 0.85rem;">
+        The episode/part number (1, 2, 3, etc.)
+      </small>
+    </div>
+
+    <div class="form-group">
+      <label>Episode Title (Optional)</label>
+      <input 
+        type="text" 
+        name="title" 
+        value="<%= episode ? (episode.title || '') : '' %>" 
+        placeholder="e.g., The Beginning, Season Finale, etc." 
+      />
+    </div>
+
+    <div class="form-group">
+      <label>Episode Description (Optional)</label>
+      <textarea 
+        name="description" 
+        rows="4" 
+        placeholder="Brief description of this episode"
+      ><%= episode ? (episode.description || '') : '' %></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Duration (minutes, optional)</label>
+      <input 
+        type="number" 
+        name="duration" 
+        value="<%= episode ? (episode.duration || '') : '' %>" 
+        min="1"
+        placeholder="45" 
+      />
+    </div>
+
+    <hr style="margin: 2rem 0; border: none; border-top: 1px solid var(--border);">
+
+    <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Video Source</h3>
+    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem;">
+      Choose one option: Either provide a video link (YouTube, Vimeo, etc.) OR upload a video file from your device.
+    </p>
+
+    <!-- Option 1: Video Link -->
+    <div class="form-group">
+      <label>Option 1: Video Link (YouTube, Vimeo, or Direct URL)</label>
+      <input 
+        type="url" 
+        name="video_url" 
+        id="video_url"
+        value="<%= episode ? (episode.video_url && !episode.video_url.startsWith('/uploads') ? episode.video_url : '') : '' %>" 
+        placeholder="https://www.youtube.com/watch?v=... or https://example.com/video.mp4" 
+      />
+      <small style="color: var(--text-secondary); font-size: 0.85rem;">
+        Paste YouTube, Vimeo, or direct video link
+      </small>
+    </div>
+
+    <div style="text-align: center; margin: 1rem 0; color: var(--text-secondary); font-weight: 600;">
+      — OR —
+    </div>
+
+    <!-- Option 2: File Upload -->
+    <div class="form-group">
+      <label>Option 2: Upload Video File from Your Device</label>
+      <input 
+        type="file" 
+        name="video_file" 
+        id="video_file"
+        accept="video/*"
+        style="padding: 0.5rem;"
+      />
+      <small style="color: var(--text-secondary); font-size: 0.85rem; display: block; margin-top: 0.5rem;">
+        <strong>Supported formats:</strong> MP4, AVI, MKV, MOV, WMV, FLV, WebM<br>
+        <strong>Maximum size:</strong> 500MB per file<br>
+        <% if (episode && episode.video_url.startsWith('/uploads')) { %>
+          <strong style="color: var(--secondary);">Current file:</strong> <%= episode.video_url.split('/').pop() %>
+        <% } %>
+      </small>
+    </div>
+
+    <div style="background: var(--card-bg); padding: 1rem; border-radius: 8px; margin: 1.5rem 0; border-left: 3px solid var(--primary);">
+      <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">
+        ⚠️ <strong>Important:</strong> You must provide either a video link OR upload a file. If you upload a file, it will override any link you provide.
+      </p>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn primary">
+        <%= episode ? '✔ Save Changes' : '➕ Add Episode' %>
+      </button>
+      <a href="/admin/content/<%= content.id %>/episodes" class="btn secondary">
+        ← Back to Episodes
+      </a>
+    </div>
+  </form>
+</div>
+
+<script>
+  // Clear video_url when file is selected
+  document.getElementById('video_file').addEventListener('change', function() {
+    if (this.files && this.files.length > 0) {
+      document.getElementById('video_url').value = '';
+      document.getElementById('video_url').removeAttribute('required');
+    }
+  });
+
+  // Clear file when URL is entered
+  document.getElementById('video_url').addEventListener('input', function() {
+    if (this.value) {
+      document.getElementById('video_file').value = '';
+    }
+  });
+</script>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+  <meta name="theme-color" content="#0a0a0a" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title><%= pageTitle || 'WF Movies - Watch Movies Online' %></title>
+  <meta name="description" content="<%= pageDescription || 'Watch the latest movies, series and anime online. High quality streaming for free.' %>" />
+  <meta name="keywords" content="<%= pageKeywords || 'movies, online streaming, watch movies, cinema, films' %>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/styles.css" />
+  <style>
+    /* Prevent text size adjustment on iOS */
+    html {
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+    
+    /* Smooth scrolling */
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    /* Touch-friendly tap targets */
+    a, button, input, select, textarea {
+      touch-action: manipulation;
+    }
+  </style>
+</head>
+<body>
+  <header id="header">
+    <div class="logo"><a href="/">WF Movies</a></div>
+    <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+      ☰
+    </button>
+    <nav id="mainNav">
+      <a href="/">Home</a>
+      <a href="/movies">Movies</a>
+      <a href="/series">Series</a>
+      <a href="/anime">Anime</a>
+      <div class="genre-dropdown">
+        <span class="genre-toggle">Genres ▾</span>
+        <div class="genre-menu">
+          <% if (typeof genres !== 'undefined' && genres.length > 0) { %>
+            <% genres.forEach(function(genre) { %>
+              <a href="/genre/<%= genre.slug %>"><%= genre.name %></a>
+            <% }); %>
+          <% } %>
+        </div>
+      </div>
+    </nav>
+    <div class="auth-links">
+      <form action="/search" method="get" class="header-search">
+        <input type="text" name="q" placeholder="Search..." />
+        <button type="submit">🔍</button>
+      </form>
+      <% if (currentUser) { %>
+        <span>Hi, <%= currentUser.username %></span>
+        <% if (currentUser.is_admin) { %>
+          <a href="/admin">Admin</a>
+        <% } %>
+        <a href="/logout">Logout</a>
+      <% } else { %>
+        <a href="/login">Login</a>
+        <a href="/register">Register</a>
+      <% } %>
+    </div>
+  </header>
+
+  <main>
+    <%- body %>
+  </main>
+
+  <footer>
+    <p>&copy; <%= new Date().getFullYear() %> WF Movies. All rights reserved.</p>
+    <p style="font-size: 0.85rem; margin-top: 0.5rem;">Watch movies, series, and anime online in high quality</p>
+  </footer>
+
+  <script>
+    // Header scroll effect
+    window.addEventListener('scroll', function() {
+      const header = document.getElementById('header');
+      if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+
+    // Mobile menu toggle
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const mainNav = document.getElementById('mainNav');
+    
+    if (mobileMenuToggle && mainNav) {
+      mobileMenuToggle.addEventListener('click', function() {
+        mainNav.classList.toggle('mobile-open');
+        // Change icon
+        this.textContent = mainNav.classList.contains('mobile-open') ? '✕' : '☰';
+      });
+      
+      // Close menu when clicking outside
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('header')) {
+          mainNav.classList.remove('mobile-open');
+          if (mobileMenuToggle) {
+            mobileMenuToggle.textContent = '☰';
+          }
+        }
+      });
+      
+      // Close menu when clicking a link
+      const navLinks = mainNav.querySelectorAll('a');
+      navLinks.forEach(link => {
+        link.addEventListener('click', function() {
+          mainNav.classList.remove('mobile-open');
+          mobileMenuToggle.textContent = '☰';
+        });
+      });
+    }
+
+    // Genre dropdown
+    const genreToggle = document.querySelector('.genre-toggle');
+    const genreMenu = document.querySelector('.genre-menu');
+    if (genreToggle && genreMenu) {
+      genreToggle.addEventListener('click', function() {
+        genreMenu.classList.toggle('show');
+      });
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('.genre-dropdown')) {
+          genreMenu.classList.remove('show');
+        }
+      });
+    }
+  </script>
+</body>
+</html>
